@@ -2020,12 +2020,9 @@ document.addEventListener('DOMContentLoaded', function() {
         body: JSON.stringify({
           messages: [{
             role: 'user',
-            content: 'Translate these UI strings from English to ' + langNames[lang] + '.\n'
-              + 'Return ONLY a valid JSON object. Keys = original English, values = translation.\n'
-              + 'Keep emoji, €, numbers, and symbols unchanged. Be concise.\n\n'
-              + texts.map((t, i) => i + ': ' + JSON.stringify(t)).join('\n')
+            content: 'Translate these ' + texts.length + ' UI strings to ' + langNames[lang] + '. Return ONLY a JSON object, nothing else. Example format: {"Hello":"Hola","Sign up":"Registrarse"}\n\nStrings to translate:\n' + JSON.stringify(texts)
           }],
-          system: 'You are a UI translator. Output ONLY a valid JSON object mapping original English strings to translated strings. No markdown, no explanation, no code blocks. Start with { and end with }.'
+          system: 'You are a JSON translation API. You ONLY output valid JSON objects. Never output plain text, explanations, or markdown. Your entire response must be a single JSON object starting with { and ending with }. Keys are original English strings, values are their translations.'
         })
       });
 

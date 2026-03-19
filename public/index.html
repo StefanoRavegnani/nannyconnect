@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NannyConnect — Trusted Childcare in Germany, Verified.</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1db87a;
+    --green-dark: #159f68;
+    --green-light: #e8faf3;
+    --green-mid: #b8edd8;
+    --bg: #f5f7f5;
+    --white: #ffffff;
+    --text: #1a1f1a;
+    --muted: #6b7a6b;
+    --border: #e2e8e2;
+    --surface: #ffffff;
+    --surface2: #f0f4f0;
+    --shadow: 0 2px 16px rgba(0,0,0,0.07);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.10);
+    --radius: 18px;
+    --radius-sm: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 200;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 68px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+
+  .nav-logo-icon {
+    width: 38px; height: 38px;
+    background: var(--green);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+
+  .nav-logo-text {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  .nav-lang {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    background: var(--white);
+    font-size: 13px; color: var(--text);
+    cursor: pointer; font-family: inherit;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-lang:hover { border-color: var(--green); }
+
+  .lang-wrapper { position: relative; }
+
+  .lang-dropdown {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    min-width: 160px;
+    z-index: 300;
+    overflow: hidden;
+    display: none;
+    animation: fadeIn 0.15s ease;
+  }
+
+  .lang-dropdown.open { display: block; }
+
+  .lang-option {
+    padding: 10px 16px;
+    font-size: 13px; color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .lang-option:hover { background: var(--green-light); }
+  .lang-option.active { background: var(--green-light); color: var(--green-dark); font-weight: 600; }
+
+  /* Translation loading overlay */
+  .translate-overlay {
+    position: fixed; inset: 0;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(4px);
+    z-index: 900;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .translate-overlay.visible { display: flex; }
+
+  .translate-spinner {
+    width: 44px; height: 44px;
+    border: 3px solid var(--border);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .translate-msg {
+    font-size: 15px; color: var(--text);
+    font-weight: 500;
+  }
+
+  .translate-sub {
+    font-size: 13px; color: var(--muted);
+  }
+
+  .btn-ghost {
+    padding: 8px 20px;
+    border: none; background: transparent;
+    font-size: 14px; font-weight: 500;
+    color: var(--text); cursor: pointer;
+    border-radius: 100px;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .btn-ghost:hover { background: var(--surface2); }
+
+  .btn-primary {
+    padding: 9px 22px;
+    background: var(--green);
+    color: white; border: none;
+    font-size: 14px; font-weight: 600;
+    border-radius: 100px;
+    cursor: pointer; font-family: inherit;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 32px 60px;
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--green-light);
+    border: 1px solid var(--green-mid);
+    color: var(--green-dark);
+    font-size: 12px; font-weight: 600;
+    padding: 5px 14px; border-radius: 100px;
+    margin-bottom: 28px;
+    letter-spacing: 0.3px;
+  }
+
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(36px, 5.5vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--green);
+  }
+
+  .hero p {
+    font-size: 17px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 560px;
+    margin: 0 auto 36px;
+    font-weight: 300;
+  }
+
+  .hero-cta {
+    display: flex; gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-hero {
+    padding: 16px 36px;
+    font-size: 16px; font-weight: 600;
+    border-radius: 100px;
+    cursor: pointer; font-family: inherit;
+    transition: all 0.25s;
+    border: 2px solid transparent;
+    letter-spacing: -0.2px;
+  }
+
+  .btn-hero-primary {
+    background: var(--green);
+    color: white;
+    border-color: var(--green);
+    box-shadow: 0 4px 20px rgba(29,184,122,0.35);
+  }
+  .btn-hero-primary:hover {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(29,184,122,0.4);
+  }
+
+  .btn-hero-outline {
+    background: white;
+    color: var(--green);
+    border-color: var(--green);
+  }
+  .btn-hero-outline:hover {
+    background: var(--green-light);
+    transform: translateY(-2px);
+  }
+
+  /* ── TRUST BAR ── */
+  .trust-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 32px; flex-wrap: wrap;
+    padding: 20px 32px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: white;
+    margin: 0 0 60px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .trust-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--muted); font-weight: 400;
+  }
+
+  .trust-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+
+  /* ── FEATURES ── */
+  .features {
+    padding: 0 32px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .feature-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: all 0.25s;
+    cursor: default;
+  }
+
+  .feature-card:hover {
+    border-color: var(--green);
+    box-shadow: 0 8px 32px rgba(29,184,122,0.12);
+    transform: translateY(-4px);
+  }
+
+  .feature-icon {
+    width: 52px; height: 52px;
+    background: var(--green-light);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+    font-size: 24px;
+  }
+
+  .feature-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+
+  .feature-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-section {
+    padding: 60px 32px;
+    background: white;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(26px, 3.5vw, 40px);
+    text-align: center;
+    letter-spacing: -1px;
+    margin-bottom: 48px;
+  }
+
+  .how-tabs {
+    display: flex; justify-content: center; gap: 8px;
+    margin-bottom: 40px;
+  }
+
+  .how-tab {
+    padding: 9px 24px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: inherit;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+
+  .how-tab.active {
+    background: var(--green);
+    color: white;
+    border-color: var(--green);
+  }
+
+  .how-steps {
+    display: none;
+    max-width: 720px;
+    margin: 0 auto;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .how-steps.active { display: flex; }
+
+  .how-step {
+    display: flex; gap: 20px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .how-step:last-child { border-bottom: none; }
+
+  .step-num {
+    width: 36px; height: 36px;
+    background: var(--green);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-body {}
+  .step-title {
+    font-weight: 600; font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; font-weight: 300; }
+
+  /* ── SITTERS GRID ── */
+  .sitters-section {
+    padding: 60px 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .sitters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+  }
+
+  .sitter-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: all 0.25s;
+    cursor: pointer;
+  }
+
+  .sitter-card:hover {
+    border-color: var(--green);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+  }
+
+  .sitter-top {
+    display: flex; align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .sitter-avatar {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .verified-badge {
+    display: flex; align-items: center; gap: 4px;
+    background: var(--green-light);
+    border: 1px solid var(--green-mid);
+    color: var(--green-dark);
+    font-size: 10px; font-weight: 700;
+    padding: 4px 8px; border-radius: 100px;
+    letter-spacing: 0.3px;
+  }
+
+  .sitter-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 700; font-size: 16px;
+    margin-bottom: 3px;
+  }
+
+  .sitter-sub { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+
+  .sitter-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .tag {
+    padding: 4px 10px;
+    background: var(--surface2);
+    border-radius: 100px;
+    font-size: 11px; font-weight: 500;
+    color: var(--text);
+  }
+
+  .sitter-rate {
+    font-size: 15px; font-weight: 700;
+    color: var(--text);
+  }
+
+  .sitter-rate span { font-size: 12px; font-weight: 400; color: var(--muted); }
+
+  .sitter-rating {
+    font-size: 12px; color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── PRICING ── */
+  .pricing-section {
+    padding: 60px 32px;
+    background: white;
+    border-top: 1px solid var(--border);
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    max-width: 900px;
+    margin: 40px auto 0;
+  }
+
+  .pricing-card {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .pricing-card.featured {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+    transform: scale(1.03);
+    box-shadow: 0 12px 40px rgba(29,184,122,0.3);
+  }
+
+  .pricing-card.featured .pricing-desc,
+  .pricing-card.featured .pricing-feature { color: rgba(255,255,255,0.8); }
+
+  .pricing-badge {
+    position: absolute; top: -12px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: white;
+    font-size: 10px; font-weight: 700;
+    padding: 4px 14px; border-radius: 100px;
+    letter-spacing: 1px; text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .pricing-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 700; font-size: 20px;
+    margin-bottom: 6px;
+  }
+
+  .pricing-price {
+    font-family: 'Fraunces', serif;
+    font-weight: 900; font-size: 40px;
+    letter-spacing: -2px;
+    margin: 12px 0 4px;
+  }
+
+  .pricing-price span { font-size: 16px; font-weight: 400; }
+  .pricing-desc { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+  .pricing-features { list-style: none; margin-bottom: 28px; }
+  .pricing-feature {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--muted);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .pricing-card.featured .pricing-feature { border-color: rgba(255,255,255,0.2); }
+  .pricing-check { color: var(--green); font-weight: 700; flex-shrink: 0; }
+  .pricing-card.featured .pricing-check { color: white; }
+
+  .btn-pricing {
+    width: 100%;
+    padding: 13px;
+    border-radius: 100px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+
+  .btn-pricing-outline {
+    background: transparent;
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .btn-pricing-outline:hover { background: var(--green-light); }
+
+  .btn-pricing-white {
+    background: white;
+    color: var(--green);
+    border-color: white;
+  }
+  .btn-pricing-white:hover { background: var(--green-light); }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-section {
+    padding: 60px 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+  }
+
+  .testimonial-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+  }
+
+  .testimonial-stars { color: #fbbf24; font-size: 14px; margin-bottom: 12px; }
+
+  .testimonial-text {
+    font-size: 14px; line-height: 1.7;
+    color: var(--text); font-weight: 300;
+    margin-bottom: 18px;
+    font-style: italic;
+  }
+
+  .testimonial-author {
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .testimonial-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    background: var(--green-light);
+  }
+
+  .testimonial-name { font-size: 13px; font-weight: 600; }
+  .testimonial-role { font-size: 11px; color: var(--muted); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--text);
+    color: white;
+    padding: 48px 32px 32px;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+
+  @media (max-width: 700px) {
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    .footer-brand { grid-column: 1 / -1; }
+  }
+
+  .footer-logo {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .footer-logo-icon {
+    width: 32px; height: 32px;
+    background: var(--green);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  .footer-logo-text {
+    font-family: 'Fraunces', serif;
+    font-weight: 700; font-size: 16px;
+  }
+
+  .footer-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.65; }
+  .footer-col-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 14px; }
+
+  .footer-links { list-style: none; }
+  .footer-links li { margin-bottom: 8px; }
+  .footer-links a { font-size: 13px; color: rgba(255,255,255,0.65); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--green); }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+  }
+
+  .footer-bottom p { font-size: 12px; color: rgba(255,255,255,0.35); }
+
+  /* ── AUTH MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 80px 16px 16px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal-box {
+    background: white;
+    border-radius: 24px;
+    padding: 36px 32px;
+    width: 100%; max-width: 440px;
+    position: relative;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 32px; height: 32px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: white; cursor: pointer;
+    font-size: 14px; color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { color: var(--text); border-color: var(--text); }
+
+  .modal-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700; font-size: 22px;
+    margin-bottom: 6px; letter-spacing: -0.5px;
+  }
+
+  .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+  .role-selector {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-bottom: 24px;
+  }
+
+  .role-btn {
+    padding: 14px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: white; cursor: pointer;
+    font-family: inherit; font-size: 13px; font-weight: 500;
+    color: var(--text);
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .role-btn:hover, .role-btn.active {
+    border-color: var(--green);
+    background: var(--green-light);
+    color: var(--green-dark);
+  }
+
+  .role-btn .role-icon { font-size: 24px; display: block; margin-bottom: 6px; }
+
+  .auth-tabs {
+    display: flex; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .auth-tab {
+    flex: 1; padding: 10px;
+    background: transparent; border: none;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: inherit;
+    color: var(--muted); transition: all 0.2s;
+  }
+
+  .auth-tab.active { background: var(--green); color: white; }
+
+  .form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .form-field label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-field input, .form-field select {
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px; font-family: inherit;
+    color: var(--text); background: white;
+    outline: none; transition: border-color 0.2s;
+    width: 100%;
+  }
+  .form-field input:focus, .form-field select:focus { border-color: var(--green); }
+
+  .auth-error {
+    background: #fff3f3; border: 1px solid #fca5a5;
+    color: #dc2626; font-size: 12px;
+    padding: 10px 12px; border-radius: 8px; margin-bottom: 12px;
+  }
+
+  .social-btn {
+    width: 100%; padding: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: white; cursor: pointer;
+    font-family: inherit; font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 10px; transition: all 0.2s;
+  }
+  .social-btn:hover { border-color: var(--green); background: var(--green-light); }
+
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 14px 0; color: var(--muted); font-size: 12px;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ── USER DASHBOARD ── */
+  .dashboard { display: none; }
+  .dashboard.active { display: block; }
+
+  .dash-header {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 32px;
+  }
+
+  .dash-welcome {
+    font-family: 'Fraunces', serif;
+    font-size: 26px; font-weight: 700;
+    margin-bottom: 4px; letter-spacing: -0.5px;
+  }
+
+  .dash-sub { font-size: 14px; color: var(--muted); }
+
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    padding: 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .dash-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .dash-card-icon { font-size: 28px; margin-bottom: 12px; }
+  .dash-card-num {
+    font-family: 'Fraunces', serif;
+    font-size: 32px; font-weight: 900;
+    letter-spacing: -1px; color: var(--green);
+    margin-bottom: 4px;
+  }
+  .dash-card-label { font-size: 13px; color: var(--muted); }
+
+  .dash-section {
+    padding: 0 32px 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .dash-section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px; font-weight: 700;
+    margin-bottom: 16px; letter-spacing: -0.3px;
+  }
+
+  /* ── CHAT WIDGET ── */
+  .chat-fab {
+    position: fixed; bottom: 28px; right: 28px;
+    width: 56px; height: 56px;
+    background: var(--green);
+    border-radius: 50%;
+    border: none; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(29,184,122,0.4);
+    font-size: 24px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500; transition: all 0.2s;
+  }
+  .chat-fab:hover { transform: scale(1.1); background: var(--green-dark); }
+
+  .chat-panel {
+    position: fixed; bottom: 96px; right: 28px;
+    width: 340px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    z-index: 500;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.25s ease;
+  }
+
+  .chat-panel.open { display: flex; }
+
+  .chat-header {
+    background: var(--green);
+    color: white;
+    padding: 16px 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .chat-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .chat-info {}
+  .chat-name { font-weight: 600; font-size: 14px; }
+  .chat-status { font-size: 11px; opacity: 0.8; }
+
+  .chat-messages {
+    flex: 1; height: 280px; overflow-y: auto;
+    padding: 16px; display: flex; flex-direction: column; gap: 10px;
+  }
+
+  .chat-msg {
+    max-width: 82%; font-size: 13px; line-height: 1.5;
+    padding: 10px 14px; border-radius: 14px;
+  }
+
+  .chat-msg.bot {
+    background: var(--surface2); color: var(--text);
+    border-bottom-left-radius: 4px; align-self: flex-start;
+  }
+
+  .chat-msg.user {
+    background: var(--green); color: white;
+    border-bottom-right-radius: 4px; align-self: flex-end;
+  }
+
+  .chat-input-row {
+    display: flex; gap: 8px;
+    padding: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .chat-input {
+    flex: 1; padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 100px; font-size: 13px;
+    font-family: inherit; outline: none;
+    transition: border-color 0.2s;
+  }
+  .chat-input:focus { border-color: var(--green); }
+
+  .chat-send {
+    width: 36px; height: 36px;
+    background: var(--green); color: white;
+    border: none; border-radius: 50%;
+    cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .chat-send:hover { background: var(--green-dark); }
+
+  /* ── MISC ── */
+  .pill-green {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--green-light); color: var(--green-dark);
+    border: 1px solid var(--green-mid);
+    font-size: 11px; font-weight: 600;
+    padding: 3px 9px; border-radius: 100px;
+  }
+
+  /* User menu */
+  #user-menu { display: none; align-items: center; gap: 10px; }
+  .user-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--green);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer; border: 2px solid var(--green-mid);
+  }
+
+  @media (max-width: 600px) {
+    nav { padding: 0 16px; }
+    .hero { padding: 48px 16px 40px; }
+    .features, .sitters-section, .testimonials-section { padding-left: 16px; padding-right: 16px; }
+    .trust-bar { gap: 16px; padding: 16px; }
+    .how-section, .pricing-section { padding-left: 16px; padding-right: 16px; }
+    .footer-top { grid-template-columns: 1fr; }
+    .chat-panel { right: 12px; width: calc(100vw - 24px); }
+    .chat-fab { right: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">🤱</div>
+    <span class="nav-logo-text">NannyConnect</span>
+  </a>
+  <div class="nav-right">
+    <div class="lang-wrapper" id="lang-wrapper">
+      <button class="nav-lang" id="nav-lang-btn">🌐 English ▾</button>
+      <div class="lang-dropdown" id="lang-dropdown">
+        <div class="lang-option active" data-lang="en" data-label="🇬🇧 English">🇬🇧 English</div>
+        <div class="lang-option" data-lang="de" data-label="🇩🇪 Deutsch">🇩🇪 Deutsch</div>
+        <div class="lang-option" data-lang="it" data-label="🇮🇹 Italiano">🇮🇹 Italiano</div>
+        <div class="lang-option" data-lang="es" data-label="🇪🇸 Español">🇪🇸 Español</div>
+        <div class="lang-option" data-lang="fr" data-label="🇫🇷 Français">🇫🇷 Français</div>
+        <div class="lang-option" data-lang="tr" data-label="🇹🇷 Türkçe">🇹🇷 Türkçe</div>
+        <div class="lang-option" data-lang="ar" data-label="🇸🇦 العربية">🇸🇦 العربية</div>
+        <div class="lang-option" data-lang="uk" data-label="🇺🇦 Українська">🇺🇦 Українська</div>
+        <div class="lang-option" data-lang="ru" data-label="🇷🇺 Русский">🇷🇺 Русский</div>
+        <div class="lang-option" data-lang="hu" data-label="🇭🇺 Magyar">🇭🇺 Magyar</div>
+      </div>
+    </div>
+    <div id="auth-btns" style="display:flex;align-items:center;gap:8px;">
+      <button class="btn-ghost" id="login-btn">Log In</button>
+      <button class="btn-primary" id="parent-join-btn" style="background:var(--green);font-size:13px;padding:8px 16px;">👨‍👩‍👧 I'm a Parent</button>
+      <button class="btn-primary" id="sitter-join-btn" style="background:#1a56db;font-size:13px;padding:8px 16px;">👩‍🍼 I'm a Sitter</button>
+    </div>
+    <div id="user-menu" style="display:none;align-items:center;gap:10px;">
+      <button class="btn-ghost" id="dashboard-btn">Dashboard</button>
+      <div class="user-avatar" id="user-avatar">?</div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN LANDING -->
+<main id="landing">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">✓ Führungszeugnis verified · Germany-wide</div>
+    <h1>Trusted Childcare in Germany, <em>Verified.</em></h1>
+    <p>Connect with professional nannies and babysitters who hold a valid Führungszeugnis. Safe, secure, and multi-lingual communication for your peace of mind.</p>
+    <div class="hero-cta">
+      <button class="btn-hero btn-hero-primary" id="parent-btn">👨‍👩‍👧 I'm a Parent</button>
+      <button class="btn-hero btn-hero-outline" id="sitter-btn">👩‍🍼 I'm a Sitter</button>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <div class="trust-bar">
+    <div class="trust-item"><div class="trust-dot"></div>Führungszeugnis required</div>
+    <div class="trust-item"><div class="trust-dot"></div>10 languages supported</div>
+    <div class="trust-item"><div class="trust-dot"></div>Berlin-based beta launch</div>
+    <div class="trust-item"><div class="trust-dot"></div>€0 platform fee to sitters</div>
+    <div class="trust-item"><div class="trust-dot"></div>Free to join during beta</div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-title">Verified Documents</div>
+        <div class="feature-desc">Mandatory Führungszeugnis (police clearance) check for every sitter. We verify documents directly — no self-reporting, no exceptions.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-title">Real-time Translation</div>
+        <div class="feature-desc">Chat in your native language. Our AI translates messages instantly between parents and sitters in 12 languages including German, English, Turkish, Arabic and more.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">Secure Chat</div>
+        <div class="feature-desc">Direct, encrypted communication between parents and sitters. Exchange details, schedule meetings, and share documents — all within the platform.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⭐</div>
+        <div class="feature-title">Verified Reviews</div>
+        <div class="feature-desc">Only families who have booked a sitter can leave a review. Authentic ratings you can trust, with no anonymous or unverified feedback.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔔</div>
+        <div class="feature-title">Instant Matching</div>
+        <div class="feature-desc">Post a job and receive applications within hours. Our algorithm matches you with sitters based on location, language, availability, and experience.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💳</div>
+        <div class="feature-title">Secure Payments</div>
+        <div class="feature-desc">Pay sitters safely through the platform. Funds are held securely and released after your booking — full protection for both parties.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section">
+    <div class="section-label">Simple Process</div>
+    <h2 class="section-title">How NannyConnect works</h2>
+    <div class="how-tabs">
+      <button class="how-tab active" data-tab="parents">For Parents</button>
+      <button class="how-tab" data-tab="sitters">For Sitters</button>
+    </div>
+
+    <div class="how-steps active" id="tab-parents">
+      <div class="how-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Create your family profile</div>
+          <div class="step-desc">Tell us about your children, location, schedule, and any special requirements like languages spoken or dietary needs.</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Browse verified sitters</div>
+          <div class="step-desc">Filter by location, language, availability, and hourly rate. Every sitter has a verified Führungszeugnis badge.</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Message and meet</div>
+          <div class="step-desc">Chat directly with sitters in your language. Arrange a free introductory call or meeting before committing.</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Book and pay securely</div>
+          <div class="step-desc">Confirm your booking through the platform. Payments are held safely and released to the sitter after your care session.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="how-steps" id="tab-sitters">
+      <div class="how-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Create your sitter profile</div>
+          <div class="step-desc">Add your experience, languages, availability, and hourly rate. Upload your Führungszeugnis for verification.</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Get verified in 24 hours</div>
+          <div class="step-desc">Our team verifies your Führungszeugnis within one business day. Verified sitters get a badge and appear higher in search results.</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Receive job requests</div>
+          <div class="step-desc">Families will find you through search or you can apply to posted jobs. Respond to families in your preferred language.</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Get paid reliably</div>
+          <div class="step-desc">Receive payment directly to your bank account after each session. Zero platform fees — you keep 100% of what you earn.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SITTERS -->
+  <section class="sitters-section">
+    <div class="section-label">Top Sitters</div>
+    <h2 class="section-title">Meet some of our verified sitters</h2>
+    <div class="sitters-grid">
+      <div class="sitter-card">
+        <div class="sitter-top">
+          <div class="sitter-avatar" style="background:#e8faf3;">👩‍🦱</div>
+          <span class="verified-badge">✓ Verified</span>
+        </div>
+        <div class="sitter-name">Maria S.</div>
+        <div class="sitter-sub">Berlin · Speaks German, English, Spanish</div>
+        <div class="sitter-tags">
+          <span class="tag">Infant care</span>
+          <span class="tag">First aid</span>
+          <span class="tag">Montessori</span>
+        </div>
+        <div class="sitter-rate">€16 <span>/ hour</span></div>
+        <div class="sitter-rating">⭐ 4.9 · 47 reviews</div>
+      </div>
+      <div class="sitter-card">
+        <div class="sitter-top">
+          <div class="sitter-avatar" style="background:#fef9e8;">👩‍🦰</div>
+          <span class="verified-badge">✓ Verified</span>
+        </div>
+        <div class="sitter-name">Leila K.</div>
+        <div class="sitter-sub">Munich · Speaks German, Arabic, French</div>
+        <div class="sitter-tags">
+          <span class="tag">Special needs</span>
+          <span class="tag">Homework help</span>
+        </div>
+        <div class="sitter-rate">€18 <span>/ hour</span></div>
+        <div class="sitter-rating">⭐ 5.0 · 31 reviews</div>
+      </div>
+      <div class="sitter-card">
+        <div class="sitter-top">
+          <div class="sitter-avatar" style="background:#e8f0fe;">👨‍🏫</div>
+          <span class="verified-badge">✓ Verified</span>
+        </div>
+        <div class="sitter-name">Jonas W.</div>
+        <div class="sitter-sub">Hamburg · Speaks German, English</div>
+        <div class="sitter-tags">
+          <span class="tag">Tutoring</span>
+          <span class="tag">Sports</span>
+          <span class="tag">After school</span>
+        </div>
+        <div class="sitter-rate">€14 <span>/ hour</span></div>
+        <div class="sitter-rating">⭐ 4.8 · 23 reviews</div>
+      </div>
+      <div class="sitter-card">
+        <div class="sitter-top">
+          <div class="sitter-avatar" style="background:#fce8f3;">👩‍🎨</div>
+          <span class="verified-badge">✓ Verified</span>
+        </div>
+        <div class="sitter-name">Priya N.</div>
+        <div class="sitter-sub">Frankfurt · Speaks German, Hindi, English</div>
+        <div class="sitter-tags">
+          <span class="tag">Arts & crafts</span>
+          <span class="tag">Newborns</span>
+        </div>
+        <div class="sitter-rate">€15 <span>/ hour</span></div>
+        <div class="sitter-rating">⭐ 4.9 · 38 reviews</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing-section">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Free during beta · Paid plans coming soon</h2>
+    <div class="pricing-grid" style="justify-content:center;">
+      <div class="pricing-card">
+        <div class="pricing-name">Free Beta</div>
+        <div class="pricing-price">€0<span>/now</span></div>
+        <div class="pricing-desc">Full access during our Berlin beta launch</div>
+        <ul class="pricing-features">
+          <li class="pricing-feature"><span class="pricing-check">✓</span> Browse verified sitters</li>
+          <li class="pricing-feature"><span class="pricing-check">✓</span> Unlimited messaging</li>
+          <li class="pricing-feature"><span class="pricing-check">✓</span> Führungszeugnis verification</li>
+          <li class="pricing-feature"><span class="pricing-check">✓</span> 10 language support</li>
+          <li class="pricing-feature"><span class="pricing-check">✓</span> AI chat assistant</li>
+        </ul>
+        <button class="btn-pricing btn-pricing-outline" onclick="openAuth('signup')">Join Free Beta →</button>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-badge">Coming Soon</div>
+        <div class="pricing-name">Family</div>
+        <div class="pricing-price">€9<span>/mo</span></div>
+        <div class="pricing-desc">After beta — everything included</div>
+        <ul class="pricing-features">
+          <li class="pricing-feature"><span class="pricing-check">✓</span> Everything in Free</li>
+          <li class="pricing-feature"><span class="pricing-check">✓</span> Priority matching</li>
+          <li class="pricing-feature"><span class="pricing-check">✓</span> Secure payments</li>
+          <li class="pricing-feature"><span class="pricing-check">✓</span> Nanny contract templates</li>
+          <li class="pricing-feature"><span class="pricing-check">✓</span> 24/7 support</li>
+        </ul>
+        <button class="btn-pricing btn-pricing-white" onclick="openAuth('signup')">Join Beta Now →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials-section">
+    <div class="section-label">Why NannyConnect</div>
+    <h2 class="section-title">Built for Germany's expat families</h2>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">🛡️</div>
+        <div class="testimonial-text">"Betreut.de has a 1.8/5 Trustpilot rating. Families report fake profiles, confusing UX, and auto-renewing subscriptions they can't cancel. NannyConnect is being built as the honest alternative."</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">📊</div>
+          <div>
+            <div class="testimonial-name">Market Research</div>
+            <div class="testimonial-role">Trustpilot · 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">👨‍👩‍👧</div>
+        <div class="testimonial-text">"Germany has a structural shortage of 300,000+ childcare places. Expat families — 13 million strong — struggle most. No existing platform speaks their language or requires verified documents."</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">🇩🇪</div>
+          <div>
+            <div class="testimonial-name">German Economic Institute</div>
+            <div class="testimonial-role">Childcare Report · 2024</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">🌍</div>
+        <div class="testimonial-text">"NannyConnect is in beta and looking for Berlin families and sitters to shape the product. Join free — your feedback will directly influence what we build next."</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">🚀</div>
+          <div>
+            <div class="testimonial-name">NannyConnect Team</div>
+            <div class="testimonial-role">Berlin Beta · 2026</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- DASHBOARD (shown when logged in) -->
+<div id="dashboard" class="dashboard">
+  <div class="dash-header">
+    <div class="dash-welcome" id="dash-welcome">Welcome back! 👋</div>
+    <div class="dash-sub" id="dash-sub">Here's what's happening with your account.</div>
+  </div>
+
+  <!-- Sitter cert banner -->
+  <div id="cert-banner" style="display:none;margin:24px 32px 0;padding:18px 24px;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:var(--radius);display:none;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="font-size:28px;">⚠️</div>
+      <div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:2px;">Upload your Führungszeugnis to get verified</div>
+        <div style="font-size:13px;color:var(--muted);">Your profile won't appear in search results until you're verified.</div>
+      </div>
+    </div>
+    <button id="upload-cert-btn" class="btn-primary" style="padding:10px 22px;font-size:13px;white-space:nowrap;">Upload Certificate →</button>
+  </div>
+  <div class="dash-grid">
+    <div class="dash-card">
+      <div class="dash-card-icon">💬</div>
+      <div class="dash-card-num">0</div>
+      <div class="dash-card-label">Messages</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-icon">⭐</div>
+      <div class="dash-card-num">0</div>
+      <div class="dash-card-label">Saved Sitters</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-icon">📅</div>
+      <div class="dash-card-num">0</div>
+      <div class="dash-card-label">Bookings</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-icon">🔔</div>
+      <div class="dash-card-num">0</div>
+      <div class="dash-card-label">New Matches</div>
+    </div>
+  </div>
+  <div class="dash-section">
+    <div class="dash-section-title">Find a Sitter</div>
+    <div class="sitters-grid" style="margin-top:0;">
+      <div class="sitter-card">
+        <div class="sitter-top">
+          <div class="sitter-avatar" style="background:#e8faf3;">👩‍🦱</div>
+          <span class="verified-badge">✓ Verified</span>
+        </div>
+        <div class="sitter-name">Maria S.</div>
+        <div class="sitter-sub">Berlin · German, English, Spanish</div>
+        <div class="sitter-tags"><span class="tag">Infant care</span><span class="tag">First aid</span></div>
+        <div class="sitter-rate">€16 <span>/ hour</span></div>
+        <div class="sitter-rating">⭐ 4.9 · 47 reviews</div>
+      </div>
+      <div class="sitter-card">
+        <div class="sitter-top">
+          <div class="sitter-avatar" style="background:#fef9e8;">👩‍🦰</div>
+          <span class="verified-badge">✓ Verified</span>
+        </div>
+        <div class="sitter-name">Leila K.</div>
+        <div class="sitter-sub">Munich · German, Arabic, French</div>
+        <div class="sitter-tags"><span class="tag">Special needs</span><span class="tag">Homework help</span></div>
+        <div class="sitter-rate">€18 <span>/ hour</span></div>
+        <div class="sitter-rating">⭐ 5.0 · 31 reviews</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PARENT AUTH MODAL ── -->
+<div id="parent-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:440px;">
+    <button class="modal-close" id="parent-modal-close">✕</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <div style="width:42px;height:42px;background:var(--green);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">👨‍👩‍👧</div>
+      <div>
+        <div class="modal-title" style="margin:0;font-size:20px;">Family Portal</div>
+        <div style="font-size:12px;color:var(--muted);">Find verified nannies & babysitters</div>
+      </div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="p-tab-login" onclick="switchParentTab('login')">Log In</button>
+      <button class="auth-tab" id="p-tab-signup" onclick="switchParentTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- Parent Login -->
+    <div id="p-login-form">
+      <button class="social-btn" onclick="signInWithGoogle('parent')">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <div class="divider">or</div>
+      <div class="form-field"><label>Email</label><input type="email" id="p-login-email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="form-field"><label>Password</label><input type="password" id="p-login-password" placeholder="••••••••" autocomplete="current-password"></div>
+      <div id="p-login-error" class="auth-error" style="display:none;"></div>
+      <button class="btn-primary" style="width:100%;padding:13px;border-radius:100px;font-size:14px;background:var(--green);" id="p-login-submit">Log In →</button>
+      <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:12px;cursor:pointer;" id="p-forgot-btn">Forgot password?</p>
+    </div>
+
+    <!-- Parent Signup -->
+    <div id="p-signup-form" style="display:none;">
+      <button class="social-btn" onclick="signInWithGoogle('parent')">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Sign up with Google
+      </button>
+      <div class="divider">or</div>
+      <div class="form-field"><label>Full Name</label><input type="text" id="p-signup-name" placeholder="Anna Müller" autocomplete="name"></div>
+      <div class="form-field"><label>Email</label><input type="email" id="p-signup-email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="form-field"><label>Password</label><input type="password" id="p-signup-password" placeholder="Min. 8 characters" autocomplete="new-password"></div>
+      <div class="form-field">
+        <label>City</label>
+        <select id="p-signup-city">
+          <option value="">Select your city...</option>
+          <option>Berlin</option><option>Munich</option><option>Hamburg</option>
+          <option>Frankfurt</option><option>Cologne</option><option>Stuttgart</option>
+          <option>Düsseldorf</option><option>Leipzig</option><option>Other</option>
+        </select>
+      </div>
+      <div id="p-signup-error" class="auth-error" style="display:none;"></div>
+      <button class="btn-primary" style="width:100%;padding:13px;border-radius:100px;font-size:14px;background:var(--green);" id="p-signup-submit">Create Family Account →</button>
+      <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:10px;">By signing up you agree to our Terms of Service</p>
+    </div>
+
+    <!-- Confirmation -->
+    <div id="p-confirm" style="display:none;text-align:center;padding:8px 0;">
+      <div style="font-size:40px;margin-bottom:14px;">📬</div>
+      <div class="modal-title" style="margin-bottom:8px;">Check your email</div>
+      <div class="modal-sub">We sent a confirmation link to <strong id="p-confirm-email"></strong>.</div>
+    </div>
+
+    <!-- Logged in -->
+    <div id="p-user-panel" style="display:none;">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+        <div id="p-panel-avatar" style="width:52px;height:52px;border-radius:50%;background:var(--green);color:white;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0;"></div>
+        <div>
+          <div id="p-panel-name" style="font-weight:600;font-size:15px;"></div>
+          <div id="p-panel-email" style="font-size:12px;color:var(--muted);"></div>
+          <div style="font-size:11px;font-weight:600;color:var(--green);margin-top:2px;">👨‍👩‍👧 Family Account</div>
+        </div>
+      </div>
+      <button id="p-signout-btn" style="width:100%;padding:12px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:14px;cursor:pointer;font-family:inherit;">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SITTER AUTH MODAL ── -->
+<div id="sitter-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:440px;">
+    <button class="modal-close" id="sitter-modal-close">✕</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <div style="width:42px;height:42px;background:#1a56db;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">👩‍🍼</div>
+      <div>
+        <div class="modal-title" style="margin:0;font-size:20px;">Sitter Portal</div>
+        <div style="font-size:12px;color:var(--muted);">Find childcare work in Germany</div>
+      </div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="s-tab-login" onclick="switchSitterTab('login')" style="background:none;">Log In</button>
+      <button class="auth-tab" id="s-tab-signup" onclick="switchSitterTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- Sitter Login -->
+    <div id="s-login-form">
+      <button class="social-btn" onclick="signInWithGoogle('sitter')">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <div class="divider">or</div>
+      <div class="form-field"><label>Email</label><input type="email" id="s-login-email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="form-field"><label>Password</label><input type="password" id="s-login-password" placeholder="••••••••" autocomplete="current-password"></div>
+      <div id="s-login-error" class="auth-error" style="display:none;"></div>
+      <button class="btn-primary" style="width:100%;padding:13px;border-radius:100px;font-size:14px;background:#1a56db;" id="s-login-submit">Log In →</button>
+      <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:12px;cursor:pointer;" id="s-forgot-btn">Forgot password?</p>
+    </div>
+
+    <!-- Sitter Signup -->
+    <div id="s-signup-form" style="display:none;">
+      <button class="social-btn" onclick="signInWithGoogle('sitter')">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Sign up with Google
+      </button>
+      <div class="divider">or</div>
+      <div class="form-field"><label>Full Name</label><input type="text" id="s-signup-name" placeholder="Maria Schmidt" autocomplete="name"></div>
+      <div class="form-field"><label>Email</label><input type="email" id="s-signup-email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="form-field"><label>Password</label><input type="password" id="s-signup-password" placeholder="Min. 8 characters" autocomplete="new-password"></div>
+      <div class="form-field">
+        <label>City</label>
+        <select id="s-signup-city">
+          <option value="">Select your city...</option>
+          <option>Berlin</option><option>Munich</option><option>Hamburg</option>
+          <option>Frankfurt</option><option>Cologne</option><option>Stuttgart</option>
+          <option>Düsseldorf</option><option>Leipzig</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Hourly Rate (€)</label>
+        <select id="s-signup-rate">
+          <option value="">Select your rate...</option>
+          <option>€10–12 / hour</option><option>€13–15 / hour</option>
+          <option>€16–18 / hour</option><option>€19–22 / hour</option><option>€23+ / hour</option>
+        </select>
+      </div>
+      <div id="s-signup-error" class="auth-error" style="display:none;"></div>
+      <button class="btn-primary" style="width:100%;padding:13px;border-radius:100px;font-size:14px;background:#1a56db;" id="s-signup-submit">Create Sitter Account →</button>
+      <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:10px;">You'll need to upload your Führungszeugnis after registration</p>
+    </div>
+
+    <!-- Confirmation -->
+    <div id="s-confirm" style="display:none;text-align:center;padding:8px 0;">
+      <div style="font-size:40px;margin-bottom:14px;">📬</div>
+      <div class="modal-title" style="margin-bottom:8px;">Check your email</div>
+      <div class="modal-sub">We sent a confirmation link to <strong id="s-confirm-email"></strong>. After confirming, upload your Führungszeugnis to get verified.</div>
+    </div>
+
+    <!-- Logged in -->
+    <div id="s-user-panel" style="display:none;">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+        <div id="s-panel-avatar" style="width:52px;height:52px;border-radius:50%;background:#1a56db;color:white;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0;"></div>
+        <div>
+          <div id="s-panel-name" style="font-weight:600;font-size:15px;"></div>
+          <div id="s-panel-email" style="font-size:12px;color:var(--muted);"></div>
+          <div style="font-size:11px;font-weight:600;color:#1a56db;margin-top:2px;">👩‍🍼 Sitter Account</div>
+        </div>
+      </div>
+      <button id="cert-upload-from-panel" class="btn-primary" style="width:100%;padding:12px;border-radius:100px;font-size:13px;background:#1a56db;margin-bottom:10px;">🛡️ Upload Führungszeugnis →</button>
+      <button id="s-signout-btn" style="width:100%;padding:12px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:14px;cursor:pointer;font-family:inherit;">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN PORTAL CHOOSER (for "Log In" button) -->
+<div id="login-chooser-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:400px;text-align:center;">
+    <button class="modal-close" id="login-chooser-close">✕</button>
+    <div style="font-size:36px;margin-bottom:16px;">👋</div>
+    <div class="modal-title" style="margin-bottom:8px;">Welcome back</div>
+    <div class="modal-sub" style="margin-bottom:28px;">Choose your account type to log in</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <button onclick="closeLoginChooser(); openParentModal('login')" style="padding:16px;border-radius:var(--radius);border:2px solid var(--green);background:var(--green-light);cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:var(--green-dark);display:flex;align-items:center;gap:12px;">
+        <span style="font-size:28px;">👨‍👩‍👧</span>
+        <div style="text-align:left;">
+          <div>I'm a Parent / Family</div>
+          <div style="font-size:12px;font-weight:400;color:var(--muted);">Looking for a nanny or babysitter</div>
+        </div>
+      </button>
+      <button onclick="closeLoginChooser(); openSitterModal('login')" style="padding:16px;border-radius:var(--radius);border:2px solid #1a56db;background:#eff6ff;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:#1e40af;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:28px;">👩‍🍼</span>
+        <div style="text-align:left;">
+          <div>I'm a Sitter / Nanny</div>
+          <div style="font-size:12px;font-weight:400;color:var(--muted);">Looking for childcare work</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT FAB -->
+<button class="chat-fab" id="chat-fab" title="Chat with us">💬</button>
+<div class="chat-panel" id="chat-panel">
+  <div class="chat-header">
+    <div class="chat-avatar">🤱</div>
+    <div class="chat-info">
+      <div class="chat-name">NannyConnect Support</div>
+      <div class="chat-status">● Online · replies instantly</div>
+    </div>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-msg bot">Hi! 👋 Welcome to NannyConnect. Are you looking for a sitter, or joining as a nanny?</div>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chat-input" placeholder="Type a message..." />
+    <button class="chat-send" id="chat-send">↑</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <div class="footer-logo-icon">🤱</div>
+        <span class="footer-logo-text">NannyConnect</span>
+      </div>
+      <p class="footer-desc">Connecting families with trusted, verified childcare professionals across Germany. Safe, secure, multi-lingual.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Families</div>
+      <ul class="footer-links">
+        <li><a href="#">How it works</a></li>
+        <li><a href="#">Browse sitters</a></li>
+        <li><a href="#">Pricing</a></li>
+        <li><a href="#">Safety</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Sitters</div>
+      <ul class="footer-links">
+        <li><a href="#">Join as a sitter</a></li>
+        <li><a href="#">How to get verified</a></li>
+        <li><a href="#">Earnings</a></li>
+        <li><a href="#">Sitter resources</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="#">About us</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 NannyConnect GmbH · Berlin, Germany</p>
+    <p>Made with ♥ for families across Germany</p>
+  </div>
+</footer>
+
+<!-- TRANSLATION OVERLAY -->
+<div class="translate-overlay" id="translate-overlay">
+  <div class="translate-spinner"></div>
+  <div class="translate-msg" id="translate-msg">Translating page...</div>
+  <div class="translate-sub" id="translate-sub">This may take a few seconds</div>
+</div>
+
+<!-- CERTIFICATE UPLOAD MODAL (sitters only) -->
+<div id="cert-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:500px;">
+    <button class="modal-close" id="cert-close">✕</button>
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:40px;margin-bottom:12px;">🛡️</div>
+      <div class="modal-title">Upload your Führungszeugnis</div>
+      <div class="modal-sub">Required to appear as a verified sitter. We review documents within 24 hours.</div>
+    </div>
+
+    <div id="cert-upload-step">
+      <div style="border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg);" id="cert-dropzone">
+        <div style="font-size:36px;margin-bottom:10px;">📄</div>
+        <div style="font-weight:600;margin-bottom:4px;">Drop your certificate here</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">or click to browse · PDF, JPG, PNG · Max 10MB</div>
+        <input type="file" id="cert-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none;">
+        <button class="btn-primary" style="padding:10px 24px;font-size:13px;" onclick="document.getElementById('cert-file').click()">Choose File</button>
+      </div>
+
+      <div id="cert-file-preview" style="display:none;margin-top:16px;padding:14px;background:var(--green-light);border:1px solid var(--green-mid);border-radius:var(--radius-sm);display:none;align-items:center;gap:12px;">
+        <div style="font-size:24px;">📎</div>
+        <div style="flex:1;">
+          <div id="cert-filename" style="font-weight:600;font-size:13px;"></div>
+          <div id="cert-filesize" style="font-size:11px;color:var(--muted);"></div>
+        </div>
+        <button onclick="clearCertFile()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;">✕</button>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div class="form-field">
+          <label>Issue Date</label>
+          <input type="date" id="cert-date" style="width:100%;">
+        </div>
+        <div class="form-field">
+          <label>Full name on certificate</label>
+          <input type="text" id="cert-name" placeholder="As it appears on the document">
+        </div>
+      </div>
+
+      <div id="cert-error" class="auth-error" style="display:none;"></div>
+
+      <button class="btn-primary" id="cert-submit" style="width:100%;padding:13px;border-radius:100px;font-size:14px;margin-top:8px;">
+        Submit for Verification →
+      </button>
+      <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:10px;">Your document is encrypted and only reviewed by our team. We never share it publicly.</p>
+    </div>
+
+    <div id="cert-success-step" style="display:none;text-align:center;padding:8px 0;">
+      <div style="font-size:48px;margin-bottom:14px;">✅</div>
+      <div class="modal-title" style="margin-bottom:8px;">Document submitted!</div>
+      <div class="modal-sub">We'll review your Führungszeugnis within 24 hours. You'll receive an email once you're verified and your profile goes live.</div>
+      <div style="margin-top:20px;padding:14px;background:var(--green-light);border-radius:var(--radius-sm);font-size:13px;color:var(--green-dark);font-weight:500;">
+        🟡 Verification pending · Usually completed within 24h
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ── CONFIG ──
+const SUPABASE_URL  = 'https://onklixeshnexrjuvzlqj.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_ak7vP9n85WBwcNkI4CfXOA_3FTOUEmJ';
+
+// Supabase loads async — initialize lazily
+function getSupabase() {
+  if (SUPABASE_URL === 'YOUR_SUPABASE_URL') return null;
+  if (!window.supabase) return null;
+  if (!window._sb) window._sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  return window._sb;
+}
+
+let currentUser = null;
+let certFile = null;
+
+// ── HELPERS ──
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = '';
+  el.style.background = '#fff3f3'; el.style.borderColor = '#fca5a5'; el.style.color = '#dc2626';
+}
+function showSuccess(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = '';
+  el.style.background = '#f0fdf4'; el.style.borderColor = '#86efac'; el.style.color = '#166534';
+}
+function closeAll() {
+  ['parent-modal','sitter-modal','login-chooser-modal','cert-modal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+// ── PARENT PORTAL ──
+window.openParentModal = function(tab) {
+  closeAll();
+  document.getElementById('parent-modal').style.display = 'flex';
+  document.getElementById('p-login-form').style.display   = 'none';
+  document.getElementById('p-signup-form').style.display  = 'none';
+  document.getElementById('p-confirm').style.display      = 'none';
+  document.getElementById('p-user-panel').style.display   = 'none';
+  if (currentUser && currentUser.user_metadata?.role === 'parent') {
+    document.getElementById('p-user-panel').style.display = '';
+  } else {
+    switchParentTab(tab || 'login');
+  }
+};
+
+window.switchParentTab = function(tab) {
+  document.getElementById('p-tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('p-tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('p-login-form').style.display  = tab === 'login' ? '' : 'none';
+  document.getElementById('p-signup-form').style.display = tab === 'signup' ? '' : 'none';
+  document.getElementById('p-login-error').style.display  = 'none';
+  document.getElementById('p-signup-error').style.display = 'none';
+};
+
+// ── SITTER PORTAL ──
+window.openSitterModal = function(tab) {
+  closeAll();
+  document.getElementById('sitter-modal').style.display = 'flex';
+  document.getElementById('s-login-form').style.display   = 'none';
+  document.getElementById('s-signup-form').style.display  = 'none';
+  document.getElementById('s-confirm').style.display      = 'none';
+  document.getElementById('s-user-panel').style.display   = 'none';
+  if (currentUser && currentUser.user_metadata?.role === 'sitter') {
+    document.getElementById('s-user-panel').style.display = '';
+  } else {
+    switchSitterTab(tab || 'login');
+  }
+};
+
+window.switchSitterTab = function(tab) {
+  document.getElementById('s-tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('s-tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('s-login-form').style.display  = tab === 'login' ? '' : 'none';
+  document.getElementById('s-signup-form').style.display = tab === 'signup' ? '' : 'none';
+  document.getElementById('s-login-error').style.display  = 'none';
+  document.getElementById('s-signup-error').style.display = 'none';
+};
+
+// ── LOGIN CHOOSER ──
+window.closeLoginChooser = function() {
+  document.getElementById('login-chooser-modal').style.display = 'none';
+};
+
+// ── GOOGLE OAUTH ──
+window.signInWithGoogle = async function(role) {
+  if (!getSupabase()) { alert('Supabase not configured yet.'); return; }
+  await getSupabase().auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin,
+      queryParams: { role }
+    }
+  });
+};
+
+// ── AUTH STATE ──
+function setLoggedIn(user) {
+  currentUser = user;
+  const name = user.user_metadata?.full_name || user.email || '';
+  const initials = name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() || '?';
+  const role = user.user_metadata?.role || 'parent';
+  const isSitter = role === 'sitter';
+
+  document.getElementById('auth-btns').style.display = 'none';
+  document.getElementById('user-menu').style.display = 'flex';
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('user-avatar').style.background = isSitter ? '#1a56db' : 'var(--green)';
+
+  // Populate both panels
+  ['p','s'].forEach(prefix => {
+    const a = document.getElementById(prefix + '-panel-avatar');
+    const n = document.getElementById(prefix + '-panel-name');
+    const e = document.getElementById(prefix + '-panel-email');
+    if (a) a.textContent = initials;
+    if (n) n.textContent = name;
+    if (e) e.textContent = user.email || '';
+  });
+
+  document.getElementById('dash-welcome').textContent = 'Welcome back, ' + (name.split(' ')[0] || 'there') + '! 👋';
+  document.getElementById('dash-sub').textContent = isSitter
+    ? 'Your sitter dashboard — upload your Führungszeugnis to appear in search results.'
+    : 'Your family dashboard — find and book verified sitters.';
+
+  const certBanner = document.getElementById('cert-banner');
+  if (certBanner) certBanner.style.display = isSitter ? 'flex' : 'none';
+}
+
+function setLoggedOut() {
+  currentUser = null;
+  document.getElementById('auth-btns').style.display = 'flex';
+  document.getElementById('user-menu').style.display = 'none';
+  document.getElementById('landing').style.display = '';
+  document.getElementById('dashboard').classList.remove('active');
+}
+
+// ── CERTIFICATE UPLOAD ──
+window.clearCertFile = function() {
+  certFile = null;
+  document.getElementById('cert-file').value = '';
+  document.getElementById('cert-file-preview').style.display = 'none';
+  document.getElementById('cert-dropzone').style.borderColor = 'var(--border)';
+};
+
+function openCertModal() {
+  closeAll();
+  document.getElementById('cert-modal').style.display = 'flex';
+  document.getElementById('cert-upload-step').style.display = '';
+  document.getElementById('cert-success-step').style.display = 'none';
+  document.getElementById('cert-error').style.display = 'none';
+}
+
+// ── MAIN INIT ──
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Nav buttons
+  document.getElementById('login-btn').addEventListener('click', () => {
+    document.getElementById('login-chooser-modal').style.display = 'flex';
+  });
+  document.getElementById('login-chooser-close').addEventListener('click', () => {
+    document.getElementById('login-chooser-modal').style.display = 'none';
+  });
+  document.getElementById('login-chooser-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('login-chooser-modal')) e.target.style.display = 'none';
+  });
+
+  document.getElementById('parent-join-btn').addEventListener('click', () => openParentModal('signup'));
+  document.getElementById('sitter-join-btn').addEventListener('click', () => openSitterModal('signup'));
+
+  document.getElementById('parent-btn').addEventListener('click', () => openParentModal('signup'));
+  document.getElementById('sitter-btn').addEventListener('click', () => openSitterModal('signup'));
+
+  document.getElementById('user-avatar').addEventListener('click', () => {
+    if (!currentUser) return;
+    const role = currentUser.user_metadata?.role;
+    if (role === 'sitter') openSitterModal();
+    else openParentModal();
+  });
+
+  document.getElementById('dashboard-btn').addEventListener('click', () => {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('dashboard').classList.add('active');
+  });
+
+  // Close modals
+  document.getElementById('parent-modal-close').addEventListener('click', () => document.getElementById('parent-modal').style.display = 'none');
+  document.getElementById('sitter-modal-close').addEventListener('click', () => document.getElementById('sitter-modal').style.display = 'none');
+  document.getElementById('parent-modal').addEventListener('click', e => { if (e.target === document.getElementById('parent-modal')) e.target.style.display = 'none'; });
+  document.getElementById('sitter-modal').addEventListener('click', e => { if (e.target === document.getElementById('sitter-modal')) e.target.style.display = 'none'; });
+
+  // ── LANGUAGE DROPDOWN ──
+  const langBtn      = document.getElementById('nav-lang-btn');
+  const langDropdown = document.getElementById('lang-dropdown');
+  let currentLang    = 'en';
+  let translationCache = {};
+
+  langBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    langDropdown.classList.toggle('open');
+  });
+
+  document.addEventListener('click', function() {
+    langDropdown.classList.remove('open');
+  });
+
+  langDropdown.addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+
+  document.querySelectorAll('.lang-option').forEach(function(opt) {
+    opt.addEventListener('click', async function() {
+      const lang  = this.dataset.lang;
+      const label = this.dataset.label;
+      if (lang === currentLang) { langDropdown.classList.remove('open'); return; }
+
+      // Update active state
+      document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+      this.classList.add('active');
+      langBtn.textContent = label + ' ▾';
+      langDropdown.classList.remove('open');
+
+      if (lang === 'en') {
+        // Restore original English
+        currentLang = 'en';
+        restoreOriginal();
+        return;
+      }
+
+      await translatePage(lang, label);
+    });
+  });
+
+  // Store original text nodes for restoration
+  const originalTexts = new Map();
+
+  function getTranslatableElements() {
+    const selectors = [
+      '.hero h1', '.hero p', '.hero-badge',
+      '.trust-item', '.feature-title', '.feature-desc',
+      '.section-title', '.section-label',
+      '.step-title', '.step-desc',
+      '.how-tab',
+      '.sitter-sub', '.sitter-tags .tag',
+      '.pricing-name', '.pricing-desc', '.pricing-feature',
+      '.testimonial-text', '.testimonial-name', '.testimonial-role',
+      '.testimonial-stars',
+      'footer .footer-col-title', 'footer .footer-links a',
+      'footer .footer-bottom p',
+      '.btn-hero-primary', '.btn-hero-outline',
+      '.btn-pricing', '.btn-ghost', '.btn-primary',
+      '#login-btn', '#parent-join-btn', '#sitter-join-btn',
+      '#dashboard-btn',
+      '.dash-welcome', '.dash-sub', '.dash-card-label',
+      '.dash-section-title',
+      '.verified-badge'
+    ];
+    const els = [];
+    selectors.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        if (el.children.length === 0 && el.textContent.trim()) els.push(el);
+      });
+    });
+    return els;
+  }
+
+  function saveOriginal(els) {
+    els.forEach(el => {
+      if (!originalTexts.has(el)) {
+        originalTexts.set(el, el.innerHTML);
+      }
+    });
+  }
+
+  function restoreOriginal() {
+    originalTexts.forEach((html, el) => {
+      el.innerHTML = html;
+    });
+  }
+
+  async function translatePage(lang, label) {
+    // Check cache
+    if (translationCache[lang]) {
+      applyTranslations(translationCache[lang]);
+      currentLang = lang;
+      return;
+    }
+
+    const overlay = document.getElementById('translate-overlay');
+    const msgEl   = document.getElementById('translate-msg');
+    const subEl   = document.getElementById('translate-sub');
+    const langNames = { de:'German', it:'Italian', es:'Spanish', fr:'French', tr:'Turkish', ar:'Arabic', uk:'Ukrainian', ru:'Russian', hu:'Hungarian' };
+
+    overlay.classList.add('visible');
+    msgEl.textContent = 'Translating to ' + langNames[lang] + '...';
+    subEl.textContent = 'Powered by AI · Takes a few seconds';
+
+    const els = getTranslatableElements();
+    saveOriginal(els);
+
+    // Build text list for translation
+    const texts = els.map(el => el.textContent.trim()).filter(t => t.length > 0);
+    const uniqueTexts = [...new Set(texts)];
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{
+            role: 'user',
+            content: 'Translate these UI text strings from English to ' + langNames[lang] + '.\n'
+              + 'Return ONLY a JSON object mapping each original English string to its translation.\n'
+              + 'Keep emoji, symbols, €, and numbers unchanged.\n'
+              + 'Keep translations concise — these are UI labels and short descriptions.\n'
+              + 'Original strings (one per line):\n'
+              + uniqueTexts.join('\n')
+          }],
+          system: 'You are a professional UI translator. Return only a valid JSON object with no markdown, no explanation. Keys are original English strings, values are translations. Preserve any emoji, currency symbols, and numbers exactly.'
+        })
+      });
+
+      const data = await res.json();
+      let text = (data.content?.[0]?.text || '{}').replace(/```json|```/g, '').trim();
+      const match = text.match(/\{[\s\S]*\}/);
+      const translations = match ? JSON.parse(match[0]) : {};
+
+      // Apply translations
+      els.forEach(el => {
+        const orig = el.textContent.trim();
+        if (translations[orig]) {
+          // Preserve child structure for elements with spans
+          if (el.querySelector('span, em, strong')) {
+            // Only translate text nodes
+            el.childNodes.forEach(node => {
+              if (node.nodeType === 3 && node.textContent.trim()) {
+                const t = translations[node.textContent.trim()];
+                if (t) node.textContent = node.textContent.replace(node.textContent.trim(), t);
+              }
+            });
+          } else {
+            el.textContent = translations[orig];
+          }
+        }
+      });
+
+      // Handle RTL for Arabic
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+      translationCache[lang] = translations;
+      currentLang = lang;
+
+    } catch(e) {
+      console.error('Translation error:', e);
+      msgEl.textContent = 'Translation unavailable — API not connected';
+    }
+
+    overlay.classList.remove('visible');
+  }
+
+  function applyTranslations(translations) {
+    restoreOriginal();
+    const els = getTranslatableElements();
+    els.forEach(el => {
+      const orig = el.textContent.trim();
+      if (translations[orig]) el.textContent = translations[orig];
+    });
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  }
+
+  // ── PARENT LOGIN ──
+  document.getElementById('p-login-submit').addEventListener('click', async function() {
+    const email = document.getElementById('p-login-email').value.trim();
+    const password = document.getElementById('p-login-password').value;
+    document.getElementById('p-login-error').style.display = 'none';
+    if (!getSupabase()) {
+      setLoggedIn({ email, user_metadata: { full_name: email.split('@')[0], role: 'parent' } });
+      document.getElementById('parent-modal').style.display = 'none'; return;
+    }
+    this.textContent = 'Logging in...'; this.disabled = true;
+    const { error } = await getSupabase().auth.signInWithPassword({ email, password });
+    this.textContent = 'Log In →'; this.disabled = false;
+    if (error) { showError('p-login-error', error.message); return; }
+    document.getElementById('parent-modal').style.display = 'none';
+  });
+
+  // ── PARENT SIGNUP ──
+  document.getElementById('p-signup-submit').addEventListener('click', async function() {
+    const name  = document.getElementById('p-signup-name').value.trim();
+    const email = document.getElementById('p-signup-email').value.trim();
+    const pass  = document.getElementById('p-signup-password').value;
+    const city  = document.getElementById('p-signup-city').value;
+    document.getElementById('p-signup-error').style.display = 'none';
+    if (!email || !pass) { showError('p-signup-error', 'Please fill in all fields.'); return; }
+    if (pass.length < 8) { showError('p-signup-error', 'Password must be at least 8 characters.'); return; }
+    if (!getSupabase()) {
+      setLoggedIn({ email, user_metadata: { full_name: name, role: 'parent', city } });
+      document.getElementById('parent-modal').style.display = 'none'; return;
+    }
+    this.textContent = 'Creating account...'; this.disabled = true;
+    const { error } = await getSupabase().auth.signUp({ email, password: pass, options: { data: { full_name: name, role: 'parent', city } } });
+    this.textContent = 'Create Family Account →'; this.disabled = false;
+    if (error) { showError('p-signup-error', error.message); return; }
+    document.getElementById('p-signup-form').style.display = 'none';
+    document.getElementById('p-confirm-email').textContent = email;
+    document.getElementById('p-confirm').style.display = '';
+  });
+
+  document.getElementById('p-forgot-btn').addEventListener('click', async () => {
+    const email = document.getElementById('p-login-email').value.trim();
+    if (!email) { showError('p-login-error', 'Enter your email above first.'); return; }
+    if (getSupabase()) await getSupabase().auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+    showSuccess('p-login-error', '✓ Reset link sent!');
+  });
+
+  document.getElementById('p-signout-btn').addEventListener('click', async () => {
+    if (getSupabase()) await getSupabase().auth.signOut();
+    setLoggedOut(); document.getElementById('parent-modal').style.display = 'none';
+  });
+
+  // ── SITTER LOGIN ──
+  document.getElementById('s-login-submit').addEventListener('click', async function() {
+    const email = document.getElementById('s-login-email').value.trim();
+    const password = document.getElementById('s-login-password').value;
+    document.getElementById('s-login-error').style.display = 'none';
+    if (!getSupabase()) {
+      setLoggedIn({ email, user_metadata: { full_name: email.split('@')[0], role: 'sitter' } });
+      document.getElementById('sitter-modal').style.display = 'none'; return;
+    }
+    this.textContent = 'Logging in...'; this.disabled = true;
+    const { error } = await getSupabase().auth.signInWithPassword({ email, password });
+    this.textContent = 'Log In →'; this.disabled = false;
+    if (error) { showError('s-login-error', error.message); return; }
+    document.getElementById('sitter-modal').style.display = 'none';
+  });
+
+  // ── SITTER SIGNUP ──
+  document.getElementById('s-signup-submit').addEventListener('click', async function() {
+    const name  = document.getElementById('s-signup-name').value.trim();
+    const email = document.getElementById('s-signup-email').value.trim();
+    const pass  = document.getElementById('s-signup-password').value;
+    const city  = document.getElementById('s-signup-city').value;
+    const rate  = document.getElementById('s-signup-rate').value;
+    document.getElementById('s-signup-error').style.display = 'none';
+    if (!email || !pass) { showError('s-signup-error', 'Please fill in all fields.'); return; }
+    if (pass.length < 8) { showError('s-signup-error', 'Password must be at least 8 characters.'); return; }
+    if (!getSupabase()) {
+      setLoggedIn({ email, user_metadata: { full_name: name, role: 'sitter', city, rate } });
+      document.getElementById('sitter-modal').style.display = 'none';
+      setTimeout(openCertModal, 400); return;
+    }
+    this.textContent = 'Creating account...'; this.disabled = true;
+    const { error } = await getSupabase().auth.signUp({ email, password: pass, options: { data: { full_name: name, role: 'sitter', city, rate } } });
+    this.textContent = 'Create Sitter Account →'; this.disabled = false;
+    if (error) { showError('s-signup-error', error.message); return; }
+    document.getElementById('s-signup-form').style.display = 'none';
+    document.getElementById('s-confirm-email').textContent = email;
+    document.getElementById('s-confirm').style.display = '';
+  });
+
+  document.getElementById('s-forgot-btn').addEventListener('click', async () => {
+    const email = document.getElementById('s-login-email').value.trim();
+    if (!email) { showError('s-login-error', 'Enter your email above first.'); return; }
+    if (getSupabase()) await getSupabase().auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+    showSuccess('s-login-error', '✓ Reset link sent!');
+  });
+
+  document.getElementById('s-signout-btn').addEventListener('click', async () => {
+    if (getSupabase()) await getSupabase().auth.signOut();
+    setLoggedOut(); document.getElementById('sitter-modal').style.display = 'none';
+  });
+
+  // Upload cert from sitter panel
+  document.getElementById('cert-upload-from-panel').addEventListener('click', () => {
+    document.getElementById('sitter-modal').style.display = 'none';
+    openCertModal();
+  });
+
+  // How-it-works tabs
+  document.querySelectorAll('.how-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.how-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.how-steps').forEach(s => s.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Chat
+  document.getElementById('chat-fab').addEventListener('click', () => {
+    document.getElementById('chat-panel').classList.toggle('open');
+  });
+  document.getElementById('chat-send').addEventListener('click', sendChatMsg);
+  document.getElementById('chat-input').addEventListener('keypress', e => { if (e.key === 'Enter') sendChatMsg(); });
+
+  // Certificate modal
+  document.getElementById('cert-close').addEventListener('click', () => document.getElementById('cert-modal').style.display = 'none');
+  document.getElementById('cert-modal').addEventListener('click', e => { if (e.target === document.getElementById('cert-modal')) e.target.style.display = 'none'; });
+
+  const certFileInput = document.getElementById('cert-file');
+  const certDropzone  = document.getElementById('cert-dropzone');
+
+  certFileInput.addEventListener('change', function() { if (this.files[0]) handleCertFile(this.files[0]); });
+  certDropzone.addEventListener('dragover', e => { e.preventDefault(); certDropzone.style.borderColor = 'var(--green)'; });
+  certDropzone.addEventListener('dragleave', () => { certDropzone.style.borderColor = 'var(--border)'; });
+  certDropzone.addEventListener('drop', e => {
+    e.preventDefault(); certDropzone.style.borderColor = 'var(--border)';
+    if (e.dataTransfer.files[0]) handleCertFile(e.dataTransfer.files[0]);
+  });
+
+  function handleCertFile(file) {
+    if (file.size > 10 * 1024 * 1024) { showError('cert-error', 'File too large. Max 10MB.'); return; }
+    certFile = file;
+    document.getElementById('cert-filename').textContent = file.name;
+    document.getElementById('cert-filesize').textContent = (file.size / 1024).toFixed(0) + ' KB';
+    const preview = document.getElementById('cert-file-preview');
+    preview.style.display = 'flex';
+    certDropzone.style.borderColor = 'var(--green)';
+    document.getElementById('cert-error').style.display = 'none';
+  }
+
+  document.getElementById('cert-submit').addEventListener('click', async function() {
+    if (!certFile) { showError('cert-error', 'Please select your Führungszeugnis file.'); return; }
+    const certDate = document.getElementById('cert-date').value;
+    const certName = document.getElementById('cert-name').value.trim();
+    if (!certDate) { showError('cert-error', 'Please enter the issue date.'); return; }
+    if (!certName) { showError('cert-error', 'Please enter your full name as shown on the certificate.'); return; }
+    this.textContent = 'Uploading...'; this.disabled = true;
+    if (getSupabase() && currentUser) {
+      try {
+        const ext = certFile.name.split('.').pop();
+        const path = `certificates/${currentUser.id}/fuehrungszeugnis.${ext}`;
+        const { error: uploadError } = await getSupabase().storage.from('certificates').upload(path, certFile, { upsert: true });
+        if (!uploadError) {
+          await getSupabase().from('sitter_verifications').upsert({
+            user_id: currentUser.id, cert_path: path, cert_name: certName,
+            cert_date: certDate, status: 'pending', submitted_at: new Date().toISOString()
+          });
+        }
+      } catch(e) { console.warn('Upload error:', e.message); }
+    }
+    this.textContent = 'Submit for Verification →'; this.disabled = false;
+    document.getElementById('cert-upload-step').style.display = 'none';
+    document.getElementById('cert-success-step').style.display = '';
+  });
+
+  const uploadCertBtn = document.getElementById('upload-cert-btn');
+  if (uploadCertBtn) uploadCertBtn.addEventListener('click', openCertModal);
+
+  // Supabase session
+  if (getSupabase()) {
+    getSupabase().auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) setLoggedIn(session.user);
+    });
+    getSupabase().auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) setLoggedIn(session.user);
+      else if (event === 'SIGNED_OUT') setLoggedOut();
+    });
+  }
+});
+
+async function sendChatMsg() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  const msgs = document.getElementById('chat-messages');
+  msgs.insertAdjacentHTML('beforeend', `<div class="chat-msg user">${msg}</div>`);
+  msgs.scrollTop = msgs.scrollHeight;
+  const typing = document.createElement('div');
+  typing.className = 'chat-msg bot'; typing.textContent = '...';
+  msgs.appendChild(typing); msgs.scrollTop = msgs.scrollHeight;
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: msg }],
+        system: 'You are a helpful support agent for NannyConnect, a verified childcare platform in Germany. Help parents find nannies and help sitters get their Führungszeugnis verified. Be warm, concise, and helpful. Reply in the same language the user writes in.'
+      })
+    });
+    const data = await res.json();
+    typing.textContent = data.content?.[0]?.text || 'Sorry, something went wrong.';
+  } catch(e) { typing.textContent = 'Sorry, something went wrong. Please try again.'; }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+</script>
+</body>
+</html>

@@ -2003,52 +2003,64 @@ document.addEventListener('DOMContentLoaded', function() {
     const msgEl   = document.getElementById('translate-msg');
     const subEl   = document.getElementById('translate-sub');
     const langNames = { de:'German', it:'Italian', es:'Spanish', fr:'French', tr:'Turkish', ar:'Arabic', uk:'Ukrainian', ru:'Russian', hu:'Hungarian' };
+    const langName = langNames[lang] || lang;
 
     overlay.classList.add('visible');
-    msgEl.textContent = 'Translating to ' + (langNames[lang] || lang) + '...';
+    msgEl.textContent = 'Translating to ' + langName + '...';
     subEl.textContent = 'Powered by AI · Takes a few seconds';
 
     const els = getTranslatableElements();
     saveOriginal(els);
 
-    const texts = [...new Set(els.map(el => el.textContent.trim()).filter(t => t.length > 1 && t.length < 200))];
+    const texts = [...new Set(
+      els.map(el => el.textContent.trim())
+         .filter(t => t.length > 1 && t.length < 150 && !/^\d+$/.test(t))
+    )];
+
+    // Translate in batches of 15 strings
+    const BATCH = 15;
+    const allTranslations = {};
 
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [{
-            role: 'user',
-            content: 'Translate these ' + texts.length + ' UI strings to ' + langNames[lang] + '. Return ONLY a JSON object, nothing else. Example format: {"Hello":"Hola","Sign up":"Registrarse"}\n\nStrings to translate:\n' + JSON.stringify(texts)
-          }],
-          system: 'You are a JSON translation API. You ONLY output valid JSON objects. Never output plain text, explanations, or markdown. Your entire response must be a single JSON object starting with { and ending with }. Keys are original English strings, values are their translations.'
-        })
-      });
+      for (let i = 0; i < texts.length; i += BATCH) {
+        const batch = texts.slice(i, i + BATCH);
+        msgEl.textContent = 'Translating ' + Math.min(i+BATCH, texts.length) + '/' + texts.length + '...';
 
-      if (!res.ok) throw new Error('API returned ' + res.status);
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [{
+              role: 'user',
+              content: JSON.stringify(batch)
+            }],
+            system: 'Translate each string in the JSON array from English to ' + langName + '. Return ONLY a JSON object where keys are the original strings and values are translations. No markdown, no explanation.'
+          })
+        });
 
-      const data = await res.json();
-      let raw = (data.content?.[0]?.text || '').replace(/```json|```/g, '').trim();
-      const match = raw.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error('No JSON in response: ' + raw.slice(0, 100));
+        if (!res.ok) throw new Error('API ' + res.status);
+        const data = await res.json();
+        const raw = (data.content?.[0]?.text || '').replace(/```json|```/g,'').trim();
+        const match = raw.match(/\{[\s\S]*\}/);
+        if (match) {
+          const parsed = JSON.parse(match[0]);
+          Object.assign(allTranslations, parsed);
+        }
+      }
 
-      const translations = JSON.parse(match[0]);
-
-      // Apply translations
+      // Apply all translations
       els.forEach(el => {
         const orig = el.textContent.trim();
-        if (translations[orig]) el.textContent = translations[orig];
+        if (allTranslations[orig]) el.textContent = allTranslations[orig];
       });
 
       document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-      translationCache[lang] = translations;
+      translationCache[lang] = allTranslations;
       currentLang = lang;
 
     } catch(e) {
       console.error('Translation error:', e.message);
       msgEl.textContent = '⚠ Translation failed: ' + e.message;
-      subEl.textContent = 'Check console for details';
       await new Promise(r => setTimeout(r, 2000));
     }
 

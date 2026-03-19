@@ -1993,7 +1993,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   async function translatePage(lang, label) {
-    // Check cache
     if (translationCache[lang]) {
       applyTranslations(translationCache[lang]);
       currentLang = lang;
@@ -2006,15 +2005,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const langNames = { de:'German', it:'Italian', es:'Spanish', fr:'French', tr:'Turkish', ar:'Arabic', uk:'Ukrainian', ru:'Russian', hu:'Hungarian' };
 
     overlay.classList.add('visible');
-    msgEl.textContent = 'Translating to ' + langNames[lang] + '...';
+    msgEl.textContent = 'Translating to ' + (langNames[lang] || lang) + '...';
     subEl.textContent = 'Powered by AI · Takes a few seconds';
 
     const els = getTranslatableElements();
     saveOriginal(els);
 
-    // Build text list for translation
-    const texts = els.map(el => el.textContent.trim()).filter(t => t.length > 0);
-    const uniqueTexts = [...new Set(texts)];
+    const texts = [...new Set(els.map(el => el.textContent.trim()).filter(t => t.length > 1 && t.length < 200))];
 
     try {
       const res = await fetch('/api/chat', {
@@ -2023,50 +2020,39 @@ document.addEventListener('DOMContentLoaded', function() {
         body: JSON.stringify({
           messages: [{
             role: 'user',
-            content: 'Translate these UI text strings from English to ' + langNames[lang] + '.\n'
-              + 'Return ONLY a JSON object mapping each original English string to its translation.\n'
-              + 'Keep emoji, symbols, €, and numbers unchanged.\n'
-              + 'Keep translations concise — these are UI labels and short descriptions.\n'
-              + 'Original strings (one per line):\n'
-              + uniqueTexts.join('\n')
+            content: 'Translate these UI strings from English to ' + langNames[lang] + '.\n'
+              + 'Return ONLY a valid JSON object. Keys = original English, values = translation.\n'
+              + 'Keep emoji, €, numbers, and symbols unchanged. Be concise.\n\n'
+              + texts.map((t, i) => i + ': ' + JSON.stringify(t)).join('\n')
           }],
-          system: 'You are a professional UI translator. Return only a valid JSON object with no markdown, no explanation. Keys are original English strings, values are translations. Preserve any emoji, currency symbols, and numbers exactly.'
+          system: 'You are a UI translator. Output ONLY a valid JSON object mapping original English strings to translated strings. No markdown, no explanation, no code blocks. Start with { and end with }.'
         })
       });
 
+      if (!res.ok) throw new Error('API returned ' + res.status);
+
       const data = await res.json();
-      let text = (data.content?.[0]?.text || '{}').replace(/```json|```/g, '').trim();
-      const match = text.match(/\{[\s\S]*\}/);
-      const translations = match ? JSON.parse(match[0]) : {};
+      let raw = (data.content?.[0]?.text || '').replace(/```json|```/g, '').trim();
+      const match = raw.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('No JSON in response: ' + raw.slice(0, 100));
+
+      const translations = JSON.parse(match[0]);
 
       // Apply translations
       els.forEach(el => {
         const orig = el.textContent.trim();
-        if (translations[orig]) {
-          // Preserve child structure for elements with spans
-          if (el.querySelector('span, em, strong')) {
-            // Only translate text nodes
-            el.childNodes.forEach(node => {
-              if (node.nodeType === 3 && node.textContent.trim()) {
-                const t = translations[node.textContent.trim()];
-                if (t) node.textContent = node.textContent.replace(node.textContent.trim(), t);
-              }
-            });
-          } else {
-            el.textContent = translations[orig];
-          }
-        }
+        if (translations[orig]) el.textContent = translations[orig];
       });
 
-      // Handle RTL for Arabic
       document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-
       translationCache[lang] = translations;
       currentLang = lang;
 
     } catch(e) {
-      console.error('Translation error:', e);
-      msgEl.textContent = 'Translation unavailable — API not connected';
+      console.error('Translation error:', e.message);
+      msgEl.textContent = '⚠ Translation failed: ' + e.message;
+      subEl.textContent = 'Check console for details';
+      await new Promise(r => setTimeout(r, 2000));
     }
 
     overlay.classList.remove('visible');

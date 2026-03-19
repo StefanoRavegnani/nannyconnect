@@ -1039,6 +1039,7 @@
     </div>
     <div id="user-menu" style="display:none;align-items:center;gap:10px;">
       <button class="btn-ghost" id="dashboard-btn">Dashboard</button>
+      <button id="nav-logout-btn" style="padding:7px 14px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit;transition:all 0.2s;" onmouseover="this.style.borderColor='#dc2626';this.style.color='#dc2626'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Sign Out</button>
       <div class="user-avatar" id="user-avatar">?</div>
     </div>
   </div>
@@ -1658,15 +1659,25 @@
     </div>
 
     <div id="cert-upload-step">
-      <div style="border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg);" id="cert-dropzone">
+      <div style="border:2px dashed var(--border);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg);" id="cert-dropzone" onclick="document.getElementById('cert-file').click()">
         <div style="font-size:36px;margin-bottom:10px;">📄</div>
         <div style="font-weight:600;margin-bottom:4px;">Drop your certificate here</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">or click to browse · PDF, JPG, PNG · Max 10MB</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">or choose an option below · PDF, JPG, PNG · Max 10MB</div>
         <input type="file" id="cert-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none;">
-        <button class="btn-primary" style="padding:10px 24px;font-size:13px;" onclick="document.getElementById('cert-file').click()">Choose File</button>
+        <input type="file" id="cert-camera" accept="image/*" capture="environment" style="display:none;">
       </div>
 
-      <div id="cert-file-preview" style="display:none;margin-top:16px;padding:14px;background:var(--green-light);border:1px solid var(--green-mid);border-radius:var(--radius-sm);display:none;align-items:center;gap:12px;">
+      <!-- Upload options -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+        <button onclick="document.getElementById('cert-file').click()" style="padding:12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:white;cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+          📁 Browse Files
+        </button>
+        <button onclick="document.getElementById('cert-camera').click()" style="padding:12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:white;cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+          📷 Take Photo
+        </button>
+      </div>
+
+      <div id="cert-file-preview" style="display:none;margin-top:16px;padding:14px;background:var(--green-light);border:1px solid var(--green-mid);border-radius:var(--radius-sm);align-items:center;gap:12px;">
         <div style="font-size:24px;">📎</div>
         <div style="flex:1;">
           <div id="cert-filename" style="font-weight:600;font-size:13px;"></div>
@@ -2129,6 +2140,11 @@ document.addEventListener('DOMContentLoaded', function() {
     showSuccess('p-login-error', '✓ Reset link sent!');
   });
 
+  document.getElementById('nav-logout-btn').addEventListener('click', async () => {
+    if (getSupabase()) await getSupabase().auth.signOut();
+    setLoggedOut();
+  });
+
   document.getElementById('p-signout-btn').addEventListener('click', async () => {
     if (getSupabase()) await getSupabase().auth.signOut();
     setLoggedOut(); document.getElementById('parent-modal').style.display = 'none';
@@ -2220,9 +2236,11 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('cert-modal').addEventListener('click', e => { if (e.target === document.getElementById('cert-modal')) e.target.style.display = 'none'; });
 
   const certFileInput = document.getElementById('cert-file');
+  const certCameraInput = document.getElementById('cert-camera');
   const certDropzone  = document.getElementById('cert-dropzone');
 
   certFileInput.addEventListener('change', function() { if (this.files[0]) handleCertFile(this.files[0]); });
+  certCameraInput.addEventListener('change', function() { if (this.files[0]) handleCertFile(this.files[0]); });
   certDropzone.addEventListener('dragover', e => { e.preventDefault(); certDropzone.style.borderColor = 'var(--green)'; });
   certDropzone.addEventListener('dragleave', () => { certDropzone.style.borderColor = 'var(--border)'; });
   certDropzone.addEventListener('drop', e => {

@@ -1,0 +1,8 @@
+{
+  "name": "nannyconnect",
+  "version": "1.0.0",
+  "description": "NannyConnect — Verified childcare marketplace for Germany",
+  "engines": { "node": ">=18" },
+  "dependencies": {},
+  "devDependencies": { "vercel": "^33.0.0" }
+}
